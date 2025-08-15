@@ -3,4 +3,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application through the main module so the settings validator can
+# sanitize dynamic environment values like ``PORT`` before passing them to
+# Uvicorn.
+CMD ["python", "main.py"]

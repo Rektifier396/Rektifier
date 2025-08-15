@@ -19,7 +19,9 @@ A simple crypto signal and backtesting bot using Binance public API, CoinGecko a
 ## Development
 ```bash
 pip install -r requirements.txt
-uvicorn main:app --reload
+# Run through the main module so environment-driven settings like ``PORT``
+# are validated before launching Uvicorn
+python main.py
 ```
 
 ## Tests
