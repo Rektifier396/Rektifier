@@ -1,1 +1,1 @@
-web: ./entrypoint.sh
+web: python main.py

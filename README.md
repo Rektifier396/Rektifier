@@ -19,9 +19,9 @@ A simple crypto signal and backtesting bot using Binance public API, CoinGecko a
 ## Development
 ```bash
 pip install -r requirements.txt
-# Start through the entrypoint script so environment-driven settings like
-# ``PORT`` are validated before launching Uvicorn
-./entrypoint.sh
+# Run the application through ``main.py`` so the ``Settings`` validator can
+# sanitize any environment-supplied ``PORT`` value before starting Uvicorn.
+python main.py
 ```
 
 ## Tests
@@ -33,7 +33,7 @@ pytest
 1. Create a new project and attach this repository.
 2. Use the provided `Dockerfile` or `Procfile` (Docker build by default).
 3. Ensure Python buildpacks install dependencies.
-4. The service launches via `entrypoint.sh`, which validates the `$PORT`
-   value before handing it to Uvicorn.
+4. The service launches via `python main.py`, which validates the `$PORT`
+    value before handing it to Uvicorn.
 
 Environment variables can override defaults defined in `config.py` (e.g., `WATCHLIST`, `TIMEFRAMES`).
