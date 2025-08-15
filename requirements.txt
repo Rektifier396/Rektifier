@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+httpx
+pandas
+numpy
+pandas_ta
+apscheduler
+pydantic-settings
+pytest
