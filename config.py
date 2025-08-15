@@ -1,6 +1,7 @@
 """Application configuration using pydantic-settings."""
 from __future__ import annotations
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -20,6 +21,20 @@ class Settings(BaseSettings):
     atr_max: float = 10000
     data_dir: str = "./data"
     log_level: str = "INFO"
+
+    @field_validator("port", mode="before")
+    @staticmethod
+    def validate_port(value: int | str | None) -> int:
+        """Ensure the port is a valid integer.
+
+        Environments sometimes provide the port as a non-numeric placeholder
+        (e.g. ``"${PORT}"``), which causes ``uvicorn`` to error. Fallback to
+        the default ``8000`` when the value can't be converted to ``int``.
+        """
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return 8000
 
     class Config:
         env_file = ".env"
