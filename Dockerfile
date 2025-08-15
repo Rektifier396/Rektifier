@@ -3,6 +3,5 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-# Launch the application via ``python main.py`` so the ``Settings`` validator
-# can sanitize any environment-provided ``PORT`` value before Uvicorn starts.
-CMD ["python", "main.py"]
+# Launch via ``entrypoint.sh`` which computes a safe port before invoking Uvicorn.
+CMD ["./entrypoint.sh"]

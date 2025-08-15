@@ -33,7 +33,7 @@ pytest
 1. Create a new project and attach this repository.
 2. Use the provided `Dockerfile` or `Procfile` (Docker build by default).
 3. Ensure Python buildpacks install dependencies.
-4. The service launches via `python main.py`, which validates the `$PORT`
-    value before handing it to Uvicorn.
+4. The service launches via `entrypoint.sh`, which computes a safe port
+    and passes it to Uvicorn.
 
 Environment variables can override defaults defined in `config.py` (e.g., `WATCHLIST`, `TIMEFRAMES`).
