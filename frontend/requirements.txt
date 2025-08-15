@@ -1,0 +1,6 @@
+streamlit
+httpx
+plotly
+python-dotenv
+tenacity
+streamlit-autorefresh
