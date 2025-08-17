@@ -22,6 +22,12 @@ class Settings(BaseSettings):
     data_dir: str = "./data"
     log_level: str = "INFO"
 
+    @field_validator("watchlist")
+    @classmethod
+    def dedup_watchlist(cls, v: list[str]) -> list[str]:
+        """Ensure watchlist has unique symbols preserving order."""
+        return list(dict.fromkeys(v))
+
     @field_validator("port", mode="before")
     @staticmethod
     def validate_port(value: int | str | None) -> int:

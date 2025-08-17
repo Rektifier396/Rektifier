@@ -93,6 +93,7 @@ def generate_signal(df: pd.DataFrame, settings: Settings) -> dict:
             "ema_slow": row["ema_slow"],
             "rsi": row["rsi"],
             "atr": atr,
+            "volume": row.get("volume"),
         },
         "risk": risk,
         "generated_at": datetime.now(timezone.utc).isoformat(),

@@ -23,7 +23,7 @@ def inject_theme() -> None:
 def build_sidebar(client) -> None:
     """Render common sidebar controls and navigation."""
     config = client.get_config()
-    watchlist = config.get("watchlist", [])
+    watchlist = list(dict.fromkeys(config.get("watchlist", [])))
     timeframes = config.get("timeframes", [])
     st.session_state["theme"] = st.sidebar.selectbox(
         "Theme", ["Dark", "Light"],
@@ -42,6 +42,8 @@ def build_sidebar(client) -> None:
     st.sidebar.page_link("pages/2_Daily_Stats.py", label="Daily Stats")
     st.sidebar.page_link("pages/3_Backtest.py", label="Backtest")
     st.sidebar.page_link("pages/4_Settings.py", label="Settings")
+
+    st.sidebar.markdown(f"[API Docs]({client.base_url}/docs)")
 
     try:
         healthy = client.health().get("status") == "ok"
