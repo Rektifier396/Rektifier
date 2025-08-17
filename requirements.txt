@@ -4,6 +4,6 @@ httpx
 pandas
 numpy
 pandas_ta
-apscheduler
+apscheduler<4
 pydantic-settings
 pytest
