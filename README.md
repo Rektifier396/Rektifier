@@ -12,6 +12,7 @@ A simple crypto signal and backtesting bot using Binance public API, CoinGecko a
 ## Endpoints
 The FastAPI backend exposes several JSON endpoints:
 - `GET /health` – service check
+- `GET /symbols` – list supported symbols
 - `GET /signals` – signal for symbol/timeframe
 - `GET /signals/batch` – all signals
 - `GET /stats/daily` – daily market statistics

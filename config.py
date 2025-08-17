@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     port: int = 8000
     watchlist: list[str] = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"]
     timeframes: list[str] = ["1m", "15m"]
+    allowed_origins: list[str] = ["*"]
     sched_interval_sec: int = 60
     ema_fast: int = 9
     ema_slow: int = 21
@@ -26,6 +27,12 @@ class Settings(BaseSettings):
     @classmethod
     def dedup_watchlist(cls, v: list[str]) -> list[str]:
         """Ensure watchlist has unique symbols preserving order."""
+        return list(dict.fromkeys(v))
+
+    @field_validator("allowed_origins")
+    @classmethod
+    def dedup_origins(cls, v: list[str]) -> list[str]:
+        """Ensure CORS origin list is unique while preserving order."""
         return list(dict.fromkeys(v))
 
     @field_validator("port", mode="before")
