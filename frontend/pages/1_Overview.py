@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import streamlit as st
 from dotenv import load_dotenv
+from datetime import datetime, timezone, timedelta
 
 from utils.api_client import get_client
 from utils.components import confidence_bar, signal_badge, sparkline
@@ -47,7 +48,14 @@ for sig in signals:
             st.write(f"SL: {risk.get('sl')}")
             st.write(f"TP1: {risk.get('tp1')}")
             st.write(f"TP2: {risk.get('tp2')}")
-            st.caption(f"Updated: {sig.get('generated_at')}")
+            raw_ts = sig.get("generated_at")
+            try:
+                dt = datetime.fromisoformat(raw_ts)
+                tz = timezone(timedelta(hours=7))
+                formatted = dt.astimezone(tz).strftime("%Hh%M %d-%m-%Y")
+            except Exception:
+                formatted = raw_ts
+            st.caption(f"Updated: {formatted}")
         with cols[2]:
             ind = sig.get("indicators", {})
             vol = ind.get("volume")
