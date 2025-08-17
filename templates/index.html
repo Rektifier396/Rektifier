@@ -22,18 +22,40 @@
   </header>
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
     <p class="text-gray-600 dark:text-gray-300">Monitor day-trading metrics such as volume and RSI for each asset.</p>
+    <div class="mt-2">
+      <label for="tf-select" class="mr-2">Timeframe:</label>
+      <select id="tf-select" class="px-2 py-1 rounded bg-gray-200 dark:bg-gray-800"></select>
+    </div>
   </section>
   <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div id="signals" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
   </main>
   <script>
+    async function loadConfig() {
+      try {
+        const res = await fetch('/config');
+        const cfg = await res.json();
+        const select = document.getElementById('tf-select');
+        select.innerHTML = '';
+        (cfg.timeframes || []).forEach(tf => {
+          const opt = document.createElement('option');
+          opt.value = tf;
+          opt.textContent = tf;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('Failed to load config', err);
+      }
+    }
+
     async function loadSignals() {
       try {
         const res = await fetch('/signals/batch');
         const data = await res.json();
         const container = document.getElementById('signals');
+        const timeframe = document.getElementById('tf-select').value;
         container.innerHTML = '';
-        data.forEach(sig => {
+        data.filter(sig => !timeframe || sig.timeframe === timeframe).forEach(sig => {
           const card = document.createElement('div');
           card.className = 'p-4 rounded bg-gray-200 dark:bg-gray-800 shadow';
           const dt = new Date(sig.generated_at);
@@ -49,7 +71,16 @@
         console.error('Failed to load signals', err);
       }
     }
-    loadSignals();
+
+    async function init() {
+      await loadConfig();
+      const select = document.getElementById('tf-select');
+      select.addEventListener('change', loadSignals);
+      await loadSignals();
+      setInterval(loadSignals, 60000);
+    }
+
+    init();
 
     const themeToggle = document.getElementById('theme-toggle');
     themeToggle.addEventListener('click', () => {
