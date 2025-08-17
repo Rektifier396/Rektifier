@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -10,6 +11,9 @@ from core.datasources import binance
 from core.indicators.ta import add_indicators
 from core.signals.engine import generate_signal
 from services.store import DataStore
+
+
+logger = logging.getLogger(__name__)
 
 
 async def update_once(settings: Settings, store: DataStore) -> None:
@@ -23,7 +27,15 @@ async def update_once(settings: Settings, store: DataStore) -> None:
             sig = generate_signal(df, settings)
             store.set_signal(symbol, tf, sig)
             Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
-            df.to_parquet(Path(settings.data_dir) / f"{symbol}_{tf}.parquet", index=False)
+            try:
+                df.to_parquet(Path(settings.data_dir) / f"{symbol}_{tf}.parquet", index=False)
+            except ImportError:
+                logger.warning(
+                    "pyarrow or fastparquet is not installed; saving %s %s data as CSV",
+                    symbol,
+                    tf,
+                )
+                df.to_csv(Path(settings.data_dir) / f"{symbol}_{tf}.csv", index=False)
 
 
 def start_scheduler(settings: Settings, store: DataStore) -> AsyncIOScheduler:
