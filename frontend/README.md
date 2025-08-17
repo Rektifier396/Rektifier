@@ -1,21 +1,19 @@
 # Crypto Signal Dashboard
 
-Streamlit dashboard that consumes the FastAPI crypto signal backend.
+CoinMarketCap-style dashboard built with static HTML, Tailwind and vanilla
+JavaScript. The interface talks to the FastAPI backend but falls back to
+`mock/summary.json` when the API is unavailable.
 
 ## Local Development
-1. Create a virtual environment and activate it.
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Copy `.env.example` to `.env` and set `API_BASE_URL` to your backend URL.
-4. Run the app:
-   ```bash
-   streamlit run frontend/app.py
-   ```
+Serve the static files in `frontend/public` with any web server. Example using
+Python:
+
+```bash
+cd frontend/public
+python -m http.server 8000
+```
+
+Visit [http://localhost:8000](http://localhost:8000) to view the dashboard.
 
 ## Deployment on Railway
-1. Push this repository to GitHub.
-2. Create a new Railway project and connect the repo.
-3. Set the `API_BASE_URL` environment variable pointing to your backend service.
-4. Railway uses the provided `Procfile` to start the Streamlit server.
+Deploy as a static site or behind any CDN. No special build step is required.
