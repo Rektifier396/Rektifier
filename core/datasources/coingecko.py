@@ -6,23 +6,25 @@ from typing import Any
 
 import httpx
 
+from services.http_client import get_client
+
 BASE_URL = "https://api.coingecko.com/api/v3"
 
 
 async def _request(path: str, params: dict[str, Any] | None = None, retries: int = 3) -> Any:
     url = f"{BASE_URL}{path}"
     backoff = 1
-    async with httpx.AsyncClient(timeout=10) as client:
-        for attempt in range(retries):
-            try:
-                resp = await client.get(url, params=params)
-                resp.raise_for_status()
-                return resp.json()
-            except httpx.HTTPError:
-                if attempt == retries - 1:
-                    raise
-                await asyncio.sleep(backoff)
-                backoff *= 2
+    client = get_client()
+    for attempt in range(retries):
+        try:
+            resp = await client.get(url, params=params)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.HTTPError:
+            if attempt == retries - 1:
+                raise
+            await asyncio.sleep(backoff)
+            backoff *= 2
 
 
 async def simple_price(ids: list[str], vs_currencies: list[str]) -> dict[str, Any]:

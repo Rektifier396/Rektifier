@@ -38,8 +38,16 @@ async def update_once(settings: Settings, store: DataStore) -> None:
                 df.to_csv(Path(settings.data_dir) / f"{symbol}_{tf}.csv", index=False)
 
 
-def start_scheduler(settings: Settings, store: DataStore) -> AsyncIOScheduler:
+def create_scheduler(settings: Settings, store: DataStore) -> AsyncIOScheduler:
+    """Configure the AsyncIO scheduler for periodic updates."""
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(update_once, "interval", seconds=settings.sched_interval_sec, args=[settings, store])
-    scheduler.start()
+    scheduler.add_job(
+        update_once,
+        "interval",
+        seconds=settings.sched_interval_sec,
+        args=[settings, store],
+        max_instances=1,
+        coalesce=True,
+        misfire_grace_time=settings.sched_interval_sec,
+    )
     return scheduler

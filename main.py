@@ -1,22 +1,44 @@
 """Main application entry point."""
+
 from __future__ import annotations
 
-import asyncio
 import logging
+from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pathlib import Path
+from fastapi.responses import HTMLResponse
 
 from api.routes import router
 from config import settings
-from services.scheduler import start_scheduler, update_once
+from services.http_client import close_client, get_client
+from services.scheduler import create_scheduler, update_once
 from services.store import DataStore
 
 logging.basicConfig(level=getattr(logging, settings.log_level))
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("apscheduler").setLevel(logging.INFO)
 
-app = FastAPI(title=settings.app_name)
+store = DataStore()
+scheduler = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global scheduler
+    get_client()  # ensure client is created
+    await update_once(settings, store)
+    scheduler = create_scheduler(settings, store)
+    scheduler.start()
+    try:
+        yield
+    finally:
+        scheduler.shutdown(wait=False)
+        await close_client()
+
+
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
@@ -24,14 +46,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
-
-store = DataStore()
-
-
-@app.on_event("startup")
-async def startup_event() -> None:
-    await update_once(settings, store)
-    start_scheduler(settings, store)
 
 
 @app.get("/", include_in_schema=False)
