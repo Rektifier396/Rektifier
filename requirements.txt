@@ -8,3 +8,4 @@ pandas_ta
 apscheduler<4
 pydantic-settings
 pytest
+cachetools
