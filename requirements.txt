@@ -3,6 +3,7 @@ uvicorn
 httpx
 pandas
 numpy
+pyarrow
 pandas_ta
 apscheduler<4
 pydantic-settings

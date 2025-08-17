@@ -17,6 +17,7 @@ client = get_client()
 build_sidebar(client)
 
 st.title("Overview")
+st.write("Monitoring day-trading metrics such as volume and RSI for selected pairs.")
 try:
     from streamlit_autorefresh import st_autorefresh
     st_autorefresh(interval=st.session_state.get("refresh_sec", 60) * 1000, key="auto")
@@ -36,7 +37,7 @@ for sig in signals:
     if sig.get("symbol") not in selected_symbols or sig.get("timeframe") != timeframe:
         continue
     with st.container():
-        cols = st.columns([2, 2, 2])
+        cols = st.columns([2, 2, 2, 2])
         with cols[0]:
             st.subheader(sig.get("symbol", ""))
             signal_badge(sig.get("signal", "FLAT"))
@@ -48,6 +49,14 @@ for sig in signals:
             st.write(f"TP2: {risk.get('tp2')}")
             st.caption(f"Updated: {sig.get('generated_at')}")
         with cols[2]:
+            ind = sig.get("indicators", {})
+            vol = ind.get("volume")
+            rsi = ind.get("rsi")
+            if vol is not None:
+                st.write(f"Volume: {vol:,.0f}")
+            if rsi is not None:
+                st.write(f"RSI: {rsi:.2f}")
+        with cols[3]:
             sparkline(sig.get("history", []))
         with st.expander("Indicators"):
             st.json(sig.get("indicators", {}))

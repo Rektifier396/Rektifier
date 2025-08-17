@@ -1,6 +1,8 @@
 """Settings page to update backend configuration."""
 from __future__ import annotations
 
+import time
+
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -28,7 +30,7 @@ with st.form("config"):
 
 if submitted:
     payload = {
-        "watchlist": [s.strip().upper() for s in watchlist.split(",") if s.strip()],
+        "watchlist": list(dict.fromkeys(s.strip().upper() for s in watchlist.split(",") if s.strip())),
         "timeframes": [s.strip() for s in timeframes.split(",") if s.strip()],
         "rsi_overbought": rsi_overbought,
         "rsi_oversold": rsi_oversold,
@@ -38,3 +40,14 @@ if submitted:
         st.success("Configuration updated")
     except Exception as exc:
         st.error(f"Failed to update: {exc}")
+
+if st.button("Reset Watchlist"):
+    progress = st.progress(0)
+    for i in range(100):
+        time.sleep(0.01)
+        progress.progress(i + 1)
+    try:
+        client.update_config({"watchlist": []})
+        st.success("Watchlist reset")
+    except Exception as exc:
+        st.error(f"Failed to reset: {exc}")

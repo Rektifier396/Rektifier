@@ -8,10 +8,17 @@
 </head>
 <body class="bg-gray-900 text-gray-100">
   <header class="bg-gray-800 shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
       <h1 class="text-3xl font-bold">Crypto Signal Dashboard</h1>
+      <nav class="space-x-4">
+        <a href="/" class="hover:underline">Home</a>
+        <a href="/docs" class="hover:underline">API Docs</a>
+      </nav>
     </div>
   </header>
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <p class="text-gray-300">Monitor day-trading metrics such as volume and RSI for each asset.</p>
+  </section>
   <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div id="signals" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
   </main>
