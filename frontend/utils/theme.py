@@ -14,9 +14,19 @@ def inject_theme() -> None:
     css_path = Path(__file__).resolve().parent.parent / "assets" / "styles.css"
     base_css = css_path.read_text()
     if theme == "light":
-        colors = "body {background-color: #ffffff; color: #000000;}"
+        colors = """
+        body {background-color: #ffffff; color: #000000;}
+        .card {background-color: #f3f4f6; color: #000000;}
+        .badge {background-color: #2563eb;}
+        .progress {background-color: #e5e7eb;}
+        """
     else:
-        colors = "body {background-color: #0e1117; color: #ffffff;}"
+        colors = """
+        body {background-color: #0e1117; color: #ffffff;}
+        .card {background-color: #1f2937; color: #ffffff;}
+        .badge {background-color: #374151;}
+        .progress {background-color: #4b5563;}
+        """
     st.markdown(f"<style>{base_css}\n{colors}</style>", unsafe_allow_html=True)
 
 

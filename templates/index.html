@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crypto Signal Dashboard</title>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-gray-100">
-  <header class="bg-gray-800 shadow">
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+  <header class="bg-gray-200 dark:bg-gray-800 shadow">
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
       <h1 class="text-3xl font-bold">Crypto Signal Dashboard</h1>
-      <nav class="space-x-4">
+      <nav class="space-x-4 flex items-center">
         <a href="/" class="hover:underline">Home</a>
         <a href="/docs" class="hover:underline">API Docs</a>
+        <button id="theme-toggle" class="px-2 py-1 rounded bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-100">Toggle Theme</button>
       </nav>
     </div>
   </header>
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-    <p class="text-gray-300">Monitor day-trading metrics such as volume and RSI for each asset.</p>
+    <p class="text-gray-600 dark:text-gray-300">Monitor day-trading metrics such as volume and RSI for each asset.</p>
   </section>
   <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div id="signals" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
@@ -31,11 +35,14 @@
         container.innerHTML = '';
         data.forEach(sig => {
           const card = document.createElement('div');
-          card.className = 'p-4 rounded bg-gray-800 shadow';
+          card.className = 'p-4 rounded bg-gray-200 dark:bg-gray-800 shadow';
+          const dt = new Date(sig.generated_at);
+          const local = new Date(dt.getTime() + 7 * 60 * 60 * 1000);
+          const formatted = `${String(local.getUTCHours()).padStart(2,'0')}h${String(local.getUTCMinutes()).padStart(2,'0')} ${String(local.getUTCDate()).padStart(2,'0')}-${String(local.getUTCMonth()+1).padStart(2,'0')}-${local.getUTCFullYear()}`;
           card.innerHTML = `<h2 class='text-xl font-semibold mb-2'>${sig.symbol}</h2>
             <p>Signal: <span class='font-bold'>${sig.signal}</span></p>
             <p>Confidence: ${sig.confidence}%</p>
-            <p class='text-sm text-gray-400'>Updated: ${sig.generated_at}</p>`;
+            <p class='text-sm text-gray-500 dark:text-gray-400'>Updated: ${formatted}</p>`;
           container.appendChild(card);
         });
       } catch (err) {
@@ -43,6 +50,11 @@
       }
     }
     loadSignals();
+
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
   </script>
 </body>
 </html>
