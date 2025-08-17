@@ -1,8 +1,8 @@
 """FastAPI routes."""
 from __future__ import annotations
 
-from datetime import date
-from pathlib import Path
+import asyncio
+from datetime import date, datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,8 +10,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from config import Settings, settings
 from core.backtest.runner import run_backtest, save_backtest
 from core.datasources import binance, coingecko, fng
+from services.metrics import fetch_ohlcv, get_metric
 from services.scheduler import update_once
 from services.store import DataStore
+from api.models import Metric, SummaryResponse
 
 router = APIRouter()
 
@@ -47,6 +49,38 @@ async def update_config(new: dict, settings: Settings = Depends(get_settings)) -
         if hasattr(settings, k):
             setattr(settings, k, v)
     return settings.model_dump()
+
+
+@router.get("/ohlcv")
+async def get_ohlcv(symbol: str, interval: str, limit: int = 500):
+    """Return list of OHLCV candles for a symbol."""
+    df = await fetch_ohlcv(symbol, interval, limit)
+    candles = [
+        [
+            int(row.open_time.timestamp() * 1000),
+            row.open,
+            row.high,
+            row.low,
+            row.close,
+            row.volume,
+        ]
+        for row in df.itertuples()
+    ]
+    return candles
+
+
+@router.get("/metrics", response_model=Metric)
+async def metrics(symbol: str, interval: str) -> Metric:
+    """Return calculated metrics for a symbol."""
+    return await get_metric(symbol, interval)
+
+
+@router.get("/summary", response_model=SummaryResponse)
+async def summary(interval: str, settings: Settings = Depends(get_settings)) -> SummaryResponse:
+    """Return metrics for all symbols in the watchlist."""
+    symbols = settings.watchlist
+    data = await asyncio.gather(*(get_metric(sym, interval) for sym in symbols))
+    return SummaryResponse(interval=interval, as_of=datetime.utcnow(), data=list(data))
 
 
 @router.get("/signals")

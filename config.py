@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     atr_max: float = 10000
     data_dir: str = "./data"
     log_level: str = "INFO"
+    cache_ttl_seconds: int = 30
 
     @field_validator("watchlist")
     @classmethod
