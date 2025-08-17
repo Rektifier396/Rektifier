@@ -1,6 +1,6 @@
 # Crypto Signal Bot
 
-A simple crypto signal and backtesting bot using Binance public API, CoinGecko and Alternative.me. Built with FastAPI and designed for deployment on Railway.
+A simple crypto signal and backtesting bot using Binance public API, CoinGecko and Alternative.me. Built with FastAPI and designed for deployment on Railway. The service now ships with a lightweight dashboard served from the root URL.
 
 ## Features
 - EMA/RSI based long/short signals with ATR risk management
@@ -10,11 +10,14 @@ A simple crypto signal and backtesting bot using Binance public API, CoinGecko a
 - No API keys required
 
 ## Endpoints
+The FastAPI backend exposes several JSON endpoints:
 - `GET /health` – service check
 - `GET /signals` – signal for symbol/timeframe
 - `GET /signals/batch` – all signals
 - `GET /stats/daily` – daily market statistics
 - `GET /backtest` – run quick backtest
+
+Opening the root path (`/`) in a browser will display a simple web UI that fetches data from the API.
 
 ## Development
 ```bash
