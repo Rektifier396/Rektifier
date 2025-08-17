@@ -7,23 +7,25 @@ from typing import Any
 import httpx
 import pandas as pd
 
+from services.http_client import get_client
+
 BASE_URL = "https://api.binance.com/api/v3"
 
 
 async def _request(url: str, params: dict[str, Any] | None = None, retries: int = 3) -> Any:
     """Perform HTTP GET with basic retry/backoff."""
     backoff = 1
-    async with httpx.AsyncClient(timeout=10) as client:
-        for attempt in range(retries):
-            try:
-                resp = await client.get(url, params=params)
-                resp.raise_for_status()
-                return resp.json()
-            except httpx.HTTPError:
-                if attempt == retries - 1:
-                    raise
-                await asyncio.sleep(backoff)
-                backoff *= 2
+    client = get_client()
+    for attempt in range(retries):
+        try:
+            resp = await client.get(url, params=params)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.HTTPError:
+            if attempt == retries - 1:
+                raise
+            await asyncio.sleep(backoff)
+            backoff *= 2
 
 
 async def get_klines(symbol: str, interval: str, limit: int = 1000) -> pd.DataFrame:
