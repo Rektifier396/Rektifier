@@ -30,6 +30,12 @@ async def health() -> dict:
     return {"status": "ok"}
 
 
+@router.get("/symbols")
+async def get_symbols(settings: Settings = Depends(get_settings)) -> list[str]:
+    """Return supported trading symbols."""
+    return settings.watchlist
+
+
 @router.get("/config")
 async def get_config(settings: Settings = Depends(get_settings)) -> dict:
     return settings.model_dump()

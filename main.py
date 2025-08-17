@@ -6,6 +6,7 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
 from api.routes import router
@@ -16,6 +17,12 @@ from services.store import DataStore
 logging.basicConfig(level=getattr(logging, settings.log_level))
 
 app = FastAPI(title=settings.app_name)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(router)
 
 store = DataStore()
